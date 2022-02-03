@@ -1,9 +1,27 @@
 
 // BUDGET CONTROLLER
 const budgetController = (function () {
-    //Some code here
+  //Expense Constructor
+  class Expense {
+        constructor(id, description, value) {
+            this.id = id;
+            this.description = description;
+            this.value = value;
+        }
+    }
 
+  //Income Constructor
+
+  class Income {
+        constructor(id, description, value) {
+            this.id = id;
+            this.description = description;
+            this.value = value;
+        }
+    }
 })
+
+
 
 
 
@@ -31,6 +49,17 @@ const UIController = (function () {
 
         getDOMstrings: function () {
             return DOMstrings;
+        }
+    };
+
+    let data = {
+        allItems: {
+            exp: [],
+            inc: []
+        },
+        totals: {
+            exp: 0,
+            inc: 0
         }
     };
 
