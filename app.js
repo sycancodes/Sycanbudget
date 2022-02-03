@@ -21,15 +21,15 @@ const UIController = (function () {
         getInput: function () {
 
             return {
-                type : document.querySelector(DOMstrings.inputType).value,
-                description : document.querySelector(DOMstrings.inputDescription).value,
-                value : document.querySelector(DOMstrings.inputValue).value
+                type: document.querySelector(DOMstrings.inputType).value,
+                description: document.querySelector(DOMstrings.inputDescription).value,
+                value: document.querySelector(DOMstrings.inputValue).value
 
             };
-            
+
         },
 
-        getDOMstrings : function () {
+        getDOMstrings: function () {
             return DOMstrings;
         }
     };
@@ -42,34 +42,40 @@ const UIController = (function () {
 //GLOBAL APP CONTROLLER
 const controller = (function (budgetCtrl, UICtrl) {
 
-    const DOM = UICtrl.getDOMstrings();
+    const setupEventListeners = function () {
+        const DOM = UICtrl.getDOMstrings();
+        document
+            .querySelector(DOM.inputBtn)
+            .addEventListener("click", ctrlAddItem);
+
+        document.addEventListener("kepress", function (event) {
+            if (event.keyCode === 13 || event.which === 13) {
+                ctrlAddItem();
+            }
+        });
+    };
 
     const ctrlAddItem = function () {
         //1. Get the field input data
         const input = UICtrl.getInput();
-        console.log(input)
         //2. Add the item to the budget controller
         //3. Add the item to the UI
         //4. Calculate the budget
         //5. Display the budget on the UI
-        
-    }
 
-    document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+    };
 
-    document.addEventListener("kepress", function (event) {
-        if (event.keyCode === 13 || event.which === 13) {
-            ctrlAddItem();
+    return {
+        init: function () {
+            console.log('Application has started!'); //Just checking if it works
+            setupEventListeners();
         }
-
-
-
-    });
+    };
 
 })(budgetController, UIController);
 
 
-
+controller.init();
 
 
 
