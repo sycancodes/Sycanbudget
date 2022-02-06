@@ -18,47 +18,47 @@ const budgetController = (function () {
             this.value = value;
         }
     }
-    
+
 
     let data = {
-      allItems: {
-        exp: [],
-        inc: [],
-      },
-      totals: {
-        exp: 0,
-        inc: 0,
-      },
+        allItems: {
+            exp: [],
+            inc: [],
+        },
+        totals: {
+            exp: 0,
+            inc: 0,
+        },
     };
 
     return {
-      addItem: function (type, des, val) {
-        let newItem, ID;
+        addItem: function (type, des, val) {
+            let newItem, ID;
 
-        //Create New ID
-        if (data.allItems[type].length > 0) {
-          ID = data.allItems[type][data.allItems[type].length - 1].id;
-        } else {
-          ID = 0;
-        }
+            //Create New ID
+            if (data.allItems[type].length > 0) {
+                ID = data.allItems[type][data.allItems[type].length - 1].id;
+            } else {
+                ID = 0;
+            }
 
-        //Creating the new item based on on the type
+            //Creating the new item based on on the type
 
-        if (type === "exp") {
-          new Expense(ID, des, val);
-        }
+            if (type === "exp") {
+                new Expense(ID, des, val);
+            }
 
-        if (type === "inc") {
-          new Income(ID, des, val);
-        }
+            if (type === "inc") {
+                new Income(ID, des, val);
+            }
 
-        //Adding the new item to our data structure
-        data.allItems[type].push(newItem);
-        return newItem;
-      },
-      testing: function () {
-        console.log(data);
-      },
+            //Adding the new item to our data structure
+            data.allItems[type].push(newItem);
+            return newItem;
+        },
+        testing: function () {
+            console.log(data);
+        },
     };
 
 })
@@ -82,7 +82,7 @@ const UIController = (function () {
             return {
                 type: document.querySelector(DOMstrings.inputType).value,
                 description: document.querySelector(DOMstrings.inputDescription).value,
-                value: document.querySelector(DOMstrings.inputValue).value
+                value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
 
             };
 
@@ -128,15 +128,15 @@ const UIController = (function () {
 
 
         //CLEARING FIELDS
-        clearFields: function() {
+        clearFields: function () {
             const fields, fieldsArr;
             fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
             fieldsArr = Array.prototype.slice.call(fields);
 
-            fieldsArr.forEach(function(current, index, array) {
+            fieldsArr.forEach(function (current, index, array) {
                 current.value = '';
             });
-            
+
             fieldsArr[0].focus();
         },
 
@@ -166,19 +166,35 @@ const controller = (function (budgetCtrl, UICtrl) {
         });
     };
 
+    const updateBudget = function () {
+        //1. Calculate the budget
+
+        //2. returns the budget
+
+        //3. Display the budget on the UI
+
+    }
+
     const ctrlAddItem = function () {
         const input, newItem;
         //1. Get the field input data
         input = UICtrl.getInput();
-        //2. Add the item to the budget controller
-        newItem = budgetCtrl.addItem(input.type, input.description, input.value);
-        //3. Add the item to the UI
-        UICtrl.addListItem(newItem, input.type);
 
-        //4. Clear fields
-        UICtrl.clearFields;
-        //5. Calculate the budget
-        //6. Display the budget on the UI
+        if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
+
+            //2. Add the item to the budget controller
+            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+
+            //3. Add the item to the UI
+            UICtrl.addListItem(newItem, input.type);
+
+            //4. Clear fields
+            UICtrl.clearFields;
+
+            //5. Calculate and update Budget
+            updateBudget();
+        }
+
 
     };
 
