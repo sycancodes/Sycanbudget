@@ -129,7 +129,8 @@ const UIController = (function () {
         expensesLabel: '.budget__expenses--value',
         percentageLabel: '.budget__percentage--percentage',
         container: '.container'
-    }
+    };
+
 
     return {
         getInput: function () {
@@ -179,6 +180,12 @@ const UIController = (function () {
 
             //Insert the HTML into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
+        },
+
+        deleteListItem: function (selectorID) {
+            const el = document.getElementById(selectorID);
+            el.parentNode.removeChild(el);
+
         },
 
 
@@ -287,7 +294,9 @@ const controller = (function (budgetCtrl, UICtrl) {
             //1. delete the item from the data structure
             budgetCtrl.deleteItem(type, ID);
             //2. delete item from the UI
+            UICtrl.deleteListItem(itemID);
             //3. update and show the new budget
+            updateBudget();
 
         }
     }
