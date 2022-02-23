@@ -82,13 +82,12 @@ const budgetController = (function () {
         },
 
         deleteItem: function (type, id) {
-            const ids, index;
 
             const ids = data.allItems[type].map(function (current) {
                 return current.id;
             })
 
-            index = ids.indexOf(id);
+            const index = ids.indexOf(id);
             if (index !== -1) {
                 data.allItems[type].splice(index, 1);
             }
@@ -172,6 +171,26 @@ const UIController = (function () {
     };
 
 
+    /* formating the amount */
+    const formatNumber = function (num, type) {
+        let numSplit, int, dec;
+        num = Math.abs(num);
+        num = num.toFixed(2);
+        // Splitting the number
+        numSplit = num.spit(".")
+        int = numSplit[0]
+
+        if (int.length > 3) {
+            int = int.substr(0, int.lenth - 3) + ',' + int.substr(int.length - 3, 3);
+        }
+
+        dec = numSplit[1]
+
+        return (type === 'exp' ? sign = '-' : sign = '+') + ' ' + int + '.' + dec
+    };
+
+
+
     return {
         getInput: function () {
 
@@ -215,7 +234,7 @@ const UIController = (function () {
             //Replace the placeholder text with some actual data
             newHTML = html.replace('%id%', obj.id);
             newHTML = newHTML.replace('%desciption%', obj.description);
-            newHTML = newHTML.replace('%value%', obj.value);
+            newHTML = newHTML.replace('%value%', formatNumber(obj.value));
 
             //Insert the HTML into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
@@ -229,9 +248,9 @@ const UIController = (function () {
 
         //CLEARING FIELDS
         clearFields: function () {
-            const fields, fieldsArr;
-            fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
-            fieldsArr = Array.prototype.slice.call(fields);
+            
+            const fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+            const fieldsArr = Array.prototype.slice.call(fields);
 
             fieldsArr.forEach(function (current, index, array) {
                 current.value = '';
@@ -241,9 +260,12 @@ const UIController = (function () {
         },
 
         displayBudget: function (obj) {
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
+            let type;
+
+            obj.budget > 0 ? type = 'inc' : type = 'exp';
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc);
+            document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp);
 
             if (obj.percentage > 0) {
                 document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
@@ -252,33 +274,34 @@ const UIController = (function () {
             }
         },
 
-        displayPercentages: function(percentages) {
+        displayPercentages: function (percentages) {
             const fields = document.querySelectorAll(DOMstrings.expensesPercentsLabel);
 
-            const nodeListForEach = function(list, callback){
+            const nodeListForEach = function (list, callback) {
                 for (let i = 0; i < list.length; i++) {
                     callback(list[i], i)
                 }
             }
 
-            nodeListForEach(fields, function(current, index){
-                if (percentages[index]>0){
-                current.textContent = percentages[index] + '%';
-                }else{
+            nodeListForEach(fields, function (current, index) {
+                if (percentages[index] > 0) {
+                    current.textContent = percentages[index] + '%';
+                } else {
                     current.textContent = '---'
                 }
             });
 
         },
 
-        displayMonth: function(){
-            const now, month, months, year;
+
+        displayMonth: function () {
+            let now, month, months, year
             now = new Date();
             months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             month = now.getMonth();
             year = now.getFullYear();
             document.querySelector(DOMstrings.dateLabel).textContent = months[month] + " " + year;
-            
+
         },
 
         getDOMstrings: function () {
@@ -329,19 +352,19 @@ const controller = (function (budgetCtrl, UICtrl) {
         const percentages = budgetCtrl.getPercentages();
         //3. update the UI with the new percentages
         UICtrl.displayPercentages(percentages);
-       
-        
+
+
     }
 
     const ctrlAddItem = function () {
-        const input, newItem;
+        
         //1. Get the field input data
-        input = UICtrl.getInput();
+        let input = UICtrl.getInput();
 
         if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
 
             //2. Add the item to the budget controller
-            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+            let newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
             //3. Add the item to the UI
             UICtrl.addListItem(newItem, input.type);
@@ -364,7 +387,7 @@ const controller = (function (budgetCtrl, UICtrl) {
     // event tells uses where the event came from
 
     const ctrlDeleteItem = function (event) {
-        const itemID, splitID, type, ID;
+        let itemID, splitID, type, ID;
         itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
 
         if (itemID) {
